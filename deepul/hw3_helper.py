@@ -212,7 +212,27 @@ def q4_b_save_results(fn):
                  fname=f'results/q4_{part}_samples.png')
     show_samples(reconstructions, title=f'Q4({part}) Reconstructions',
                  fname=f'results/q4_{part}_reconstructions.png')
-    
+
+def af_vae_save_results(part, dset_id, fn):
+    assert part in ['a', 'b'] and dset_id in [1, 2]
+    data_dir = get_data_dir(3)
+    if dset_id == 1:
+        train_data, test_data = load_pickled_data(join(data_dir, 'svhn.pkl'))
+    else:
+        train_data, test_data = load_pickled_data(join(data_dir, 'cifar10.pkl'))
+
+    train_losses, test_losses, samples, reconstructions, interpolations = fn(train_data, test_data, dset_id)
+    samples, reconstructions, interpolations = samples.astype('float32'), reconstructions.astype('float32'), interpolations.astype('float32')
+    print(f'Final -ELBO: {test_losses[-1, 0]:.4f}, Recon Loss: {test_losses[-1, 1]:.4f}, '
+          f'KL Loss: {test_losses[-1, 2]:.4f}')
+    plot_vae_training_plot(train_losses, test_losses, f'Q4({part}) Dataset {dset_id} Train Plot',
+                           f'results/q4_{part}_dset{dset_id}_train_plot.png')
+    show_samples(samples, title=f'Q4({part}) Dataset {dset_id} Samples',
+                 fname=f'results/q4_{part}_dset{dset_id}_samples.png')
+    show_samples(reconstructions, title=f'Q4({part}) Dataset {dset_id} Reconstructions',
+                 fname=f'results/q4_{part}_dset{dset_id}_reconstructions.png')
+    show_samples(interpolations, title=f'Q4({part}) Dataset {dset_id} Interpolations',
+                 fname=f'results/q4_{part}_dset{dset_id}_interpolations.png')
 ###########
 ###########
 ## GANS
@@ -357,3 +377,46 @@ def q4_save_results(fn):
                  fname='figures/q4_colored_mnist.png',
                  title=f'Source domain: Colored MNIST')
     pass
+
+def calculate_is(samples):
+    assert (type(samples[0]) == np.ndarray)
+    assert (len(samples[0].shape) == 3)
+
+    model = GoogLeNet().to(ptu.device)
+    model.load_state_dict(torch.load("deepul/deepul/hw4_utils/classifier.pt"))
+    softmax = nn.Sequential(model, nn.Softmax(dim=1))
+
+    bs = 100
+    softmax.eval()
+    with torch.no_grad():
+        preds = []
+        n_batches = int(math.ceil(float(len(samples)) / float(bs)))
+        for i in range(n_batches):
+            sys.stdout.write(".")
+            sys.stdout.flush()
+            inp = ptu.FloatTensor(samples[(i * bs):min((i + 1) * bs, len(samples))])
+            pred = ptu.get_numpy(softmax(inp))
+            preds.append(pred)
+    preds = np.concatenate(preds, 0)
+    kl = preds * (np.log(preds) - np.log(np.expand_dims(np.mean(preds, 0), 0)))
+    kl = np.mean(np.sum(kl, 1))
+    return np.exp(kl)
+
+def load_q2_data():
+    train_data = torchvision.datasets.CIFAR10("./data", transform=torchvision.transforms.ToTensor(),
+                                              download=True, train=True)
+    return train_data
+
+def visualize_q2_data():
+    train_data = load_q2_data()
+    imgs = train_data.data[:100]
+    show_samples(imgs, title=f'CIFAR-10 Samples')
+
+def q2_b_save_results(fn):
+    train_data = load_q2_data()
+    train_data = train_data.data.transpose((0, 3, 1, 2)) / 255.0
+    train_losses, samples = fn(train_data)
+
+    print("Inception score:", calculate_is(samples.transpose([0, 3, 1, 2])))
+    plot_gan_training(train_losses, 'Q2b Losses', 'results/q2b_losses.png')
+    show_samples(samples[:100] * 255.0, fname='results/q2b_samples.png', title=f'CIFAR-10 generated samples')
