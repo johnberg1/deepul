@@ -405,7 +405,10 @@ def calculate_is(samples):
 def load_q2_data():
     train_data = torchvision.datasets.CIFAR10("./data", transform=torchvision.transforms.ToTensor(),
                                               download=True, train=True)
-    return train_data
+    train_indices = get_same_index(train_data.targets, 2)
+    bird_set = torch.utils.data.Subset(cifar10data, train_indices)
+    
+    return bird_set
 
 def visualize_q2_data():
     train_data = load_q2_data()
@@ -420,3 +423,10 @@ def q2_b_save_results(fn):
     print("Inception score:", calculate_is(samples.transpose([0, 3, 1, 2])))
     plot_gan_training(train_losses, 'Q2b Losses', 'results/q2b_losses.png')
     show_samples(samples[:100] * 255.0, fname='results/q2b_samples.png', title=f'CIFAR-10 generated samples')
+    
+def get_same_index(target, label):
+    label_indices = []
+    for i in range(len(target)):
+        if target[i] == label:
+            label_indices.append(i)
+    return label_indices
