@@ -257,7 +257,7 @@ def visualize_q1_dataset():
 def q1_b_save_results(part, fn):
     data = q1_data()
     losses, samples1, xs1, ys1, samples_end, xs_end, ys_end = fn(data)
-
+    part = 'b'
     # loss plot
     plot_gan_training(losses, 'Q1{} Losses'.format(part), 'results/q1{}_losses.png'.format(part))
 
