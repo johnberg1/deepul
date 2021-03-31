@@ -406,7 +406,7 @@ def load_q2_data():
     train_data = torchvision.datasets.CIFAR10("./data", transform=torchvision.transforms.ToTensor(),
                                               download=True, train=True)
     train_indices = get_same_index(train_data.targets, 2)
-    bird_set = torch.utils.data.Subset(cifar10data, train_indices)
+    bird_set = torch.utils.data.Subset(train_data, train_indices)
     
     return bird_set
 
