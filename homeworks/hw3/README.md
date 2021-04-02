@@ -1,6 +1,6 @@
 # Homework 3: Latent Variable Models / GANs
 
-**Due April 21st, 11:59pm on Blackboard**
+**Due April 23rd, 11:59pm on Blackboard**
 
 In this homework, you will implement and train VAE and GAN models.The homework consists of two components:
 
