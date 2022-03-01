@@ -66,7 +66,7 @@ def q1_save_results(dset_type, part, fn):
                          f'results/q1_{part}_dset{dset_type}_learned_dist.png')
 
 
-# Question 2
+""" # Question 2
 def q2_a_sample_data(image_file, n, d):
     from PIL import Image
     from urllib.request import urlopen
@@ -183,7 +183,7 @@ def q2_save_results(dset_type, part, fn):
         show_samples(samples, f'results/q2_{part}_dset{dset_type}_samples.png')
 
 
-# Question 3
+# Question 3 """
 """ def q3a_save_results(dset_type, q3_a):
     data_dir = get_data_dir(1)
     if dset_type == 1:
@@ -203,33 +203,33 @@ def q2_save_results(dset_type, part, fn):
                        f'results/q3_a_dset{dset_type}_train_plot.png')
     show_samples(samples, f'results/q3_a_dset{dset_type}_samples.png') """
 
-
-def q3a_save_results(q3_a, train_data, test_data):
-    train_losses, test_losses, samples = q3_a(train_data, test_data)
-
-    print(f'Final Test Loss: {test_losses[-1]:.4f}')
-    save_training_plot(train_losses, test_losses, f'Q3(a) Train Plot',
-                       f'results/q3_a_train_plot.png')
-                       
-    show_samples_2(samples, f'results/q3_a_samples.png')
-
-def q3b_save_results(q3_b, train_data, test_data):
-    train_losses, test_losses, samples = q3_b(train_data, test_data)
+# Question 2
+def q2a_save_results(q2_a, train_data, test_data):
+    train_losses, test_losses, samples = q2_a(train_data, test_data)
 
     print(f'Final Test Loss: {test_losses[-1]:.4f}')
-    save_training_plot(train_losses, test_losses, f'Q3(b) Train Plot',
-                       f'results/q3_b_train_plot.png')
+    save_training_plot(train_losses, test_losses, f'Q2(a) Train Plot',
+                       f'results/q2_a_train_plot.png')
                        
-    show_samples_2(samples, f'results/q3_b_samples.png')
+    show_samples_2(samples, f'results/q2_a_samples.png')
 
-def q3c_save_results(q3_c, train_data, test_data):
-    train_losses, test_losses, samples = q3_c(train_data, test_data)
+def q2b_save_results(q2_b, train_data, test_data):
+    train_losses, test_losses, samples = q2_b(train_data, test_data)
 
     print(f'Final Test Loss: {test_losses[-1]:.4f}')
-    save_training_plot(train_losses, test_losses, f'Q3(c) Train Plot',
-                       f'results/q3_c_train_plot.png')
+    save_training_plot(train_losses, test_losses, f'Q2(b) Train Plot',
+                       f'results/q2_b_train_plot.png')
                        
-    show_samples_2(samples, f'results/q3_c_samples.png')
+    show_samples_2(samples, f'results/q2_b_samples.png')
+
+def q2c_save_results(q2_c, train_data, test_data):
+    train_losses, test_losses, samples = q2_c(train_data, test_data)
+
+    print(f'Final Test Loss: {test_losses[-1]:.4f}')
+    save_training_plot(train_losses, test_losses, f'Q2(c) Train Plot',
+                       f'results/q2_c_train_plot.png')
+                       
+    show_samples_2(samples, f'results/q2_c_samples.png')
 
 """ def q3bc_save_results(dset_type, part, fn):
     data_dir = get_data_dir(1)
