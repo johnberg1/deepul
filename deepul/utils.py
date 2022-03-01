@@ -80,6 +80,17 @@ def show_samples(samples, fname=None, nrow=10, title='Samples'):
     else:
         plt.show()
 
+def show_samples_2(samples, fname=None, nrow=5, title='Samples'):
+    grid_img = make_grid(samples, nrow=nrow)
+    plt.figure()
+    plt.title(title)
+    plt.imshow(grid_img.permute(1, 2, 0))
+    plt.axis('off')
+
+    if fname is not None:
+        savefig(fname)
+    else:
+        plt.show()
 
 def load_pickled_data(fname, include_labels=False):
     with open(fname, 'rb') as f:
