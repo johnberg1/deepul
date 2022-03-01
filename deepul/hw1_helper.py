@@ -204,7 +204,7 @@ def q2_save_results(dset_type, part, fn):
     show_samples(samples, f'results/q3_a_dset{dset_type}_samples.png') """
 
 
-def q3a_save_results(q3a, train_data, test_data):
+def q3a_save_results(q3_a, train_data, test_data):
     train_losses, test_losses, samples = q3_a(train_data, test_data)
 
     print(f'Final Test Loss: {test_losses[-1]:.4f}')
@@ -213,7 +213,7 @@ def q3a_save_results(q3a, train_data, test_data):
                        
     show_samples_2(samples, f'results/q3_a_samples.png')
 
-def q3b_save_results(q3a, train_data, test_data):
+def q3b_save_results(q3_b, train_data, test_data):
     train_losses, test_losses, samples = q3_b(train_data, test_data)
 
     print(f'Final Test Loss: {test_losses[-1]:.4f}')
@@ -222,7 +222,7 @@ def q3b_save_results(q3a, train_data, test_data):
                        
     show_samples_2(samples, f'results/q3_b_samples.png')
 
-def q3c_save_results(q3a, train_data, test_data):
+def q3c_save_results(q3_c, train_data, test_data):
     train_losses, test_losses, samples = q3_c(train_data, test_data)
 
     print(f'Final Test Loss: {test_losses[-1]:.4f}')
