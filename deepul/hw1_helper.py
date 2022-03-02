@@ -24,19 +24,6 @@ def q1_sample_data_2():
     train_data, test_data = data[:split], data[split:]
     return train_data, test_data
 
-def q1_sample_data_2():
-    count = 10000
-    rand = np.random.RandomState(0)
-    a = 0.3 + 0.1 * rand.randn(count)
-    b = 0.8 + 0.05 * rand.randn(count)
-    c = 0.5 + 0.04 0 
-    mask = rand.rand(count) < 0.5
-    samples = np.clip(a * mask + b * (1 - mask), 0.0, 1.0)
-    data = np.digitize(samples, np.linspace(0.0, 1.0, 100))
-    split = int(0.8 * len(data))
-    train_data, test_data = data[:split], data[split:]
-    return train_data, test_data
-
 
 def visualize_q1_data(dset_type):
     if dset_type == 1:
