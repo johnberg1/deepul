@@ -15,10 +15,16 @@ def q1_sample_data_1():
 def q1_sample_data_2():
     count = 10000
     rand = np.random.RandomState(0)
-    a = 0.3 + 0.1 * rand.randn(count)
+    a = 0.25 + 0.1 * rand.randn(count)
     b = 0.8 + 0.05 * rand.randn(count)
-    mask = rand.rand(count) < 0.5
-    samples = np.clip(a * mask + b * (1 - mask), 0.0, 1.0)
+    c = 0.5 + 0.07 * rand.randn(count)
+    d = 0.6 + 0.08 * rand.randn(count)
+    msk_rnd = rand.rand(count)
+    mask1 = np.logical_and(msk_rnd > 0.0, msk_rnd < 0.25)
+    mask2 = np.logical_and(msk_rnd > 0.25, msk_rnd < 0.5)
+    mask3 = np.logical_and(msk_rnd > 0.5, msk_rnd < 0.75)
+    mask4 = np.logical_and(msk_rnd > 0.75, msk_rnd < 1.0)
+    samples = np.clip(a * mask1 + b * mask2 + c * mask3 + d * mask4, 0.0, 1.0)
     data = np.digitize(samples, np.linspace(0.0, 1.0, 100))
     split = int(0.8 * len(data))
     train_data, test_data = data[:split], data[split:]
