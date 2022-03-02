@@ -7,6 +7,44 @@ import torch
 import torch.nn.functional as F
 from torchvision.utils import make_grid
 
+def sample_from_discretized_mix_logistic_1d(l, nr_mix):
+    # Pytorch ordering
+    l = l.permute(0, 2, 3, 1)
+    ls = [int(y) for y in l.size()]
+    xs = ls[:-1] + [1] #[3]
+
+    # unpack parameters
+    logit_probs = l[:, :, :, :nr_mix]
+    l = l[:, :, :, nr_mix:].view(xs + [nr_mix * 2]) # for mean, scale
+
+    # sample mixture indicator from softmax
+    temp = torch.FloatTensor(logit_probs.size())
+    if l.is_cuda : temp = temp.cuda()
+    temp.uniform_(1e-5, 1. - 1e-5)
+    temp = logit_probs.data - torch.log(- torch.log(temp))
+    _, argmax = temp.max(dim=3)
+   
+    one_hot = to_one_hot(argmax, nr_mix)
+    sel = one_hot.view(xs[:-1] + [1, nr_mix])
+    # select logistic parameters
+    means = torch.sum(l[:, :, :, :, :nr_mix] * sel, dim=4) 
+    log_scales = torch.clamp(torch.sum(
+        l[:, :, :, :, nr_mix:2 * nr_mix] * sel, dim=4), min=-7.)
+    u = torch.FloatTensor(means.size())
+    if l.is_cuda : u = u.cuda()
+    u.uniform_(1e-5, 1. - 1e-5)
+    x = means + torch.exp(log_scales) * (torch.log(u) - torch.log(1. - u))
+    x0 = torch.clamp(torch.clamp(x[:, :, :, 0], min=-1.), max=1.)
+    out = x0.unsqueeze(1)
+    return out
+
+def to_one_hot(tensor, n, fill_with=1.):
+    # we perform one hot encore with respect to the last axis
+    one_hot = torch.FloatTensor(tensor.size() + (n,)).zero_()
+    if tensor.is_cuda : one_hot = one_hot.cuda()
+    one_hot.scatter_(len(tensor.size()), tensor.unsqueeze(-1), fill_with)
+    return one_hot
+    
 def plot_receptive_field(out, data, col, model, layer):
     out[0, 0, 5, 5].backward()
     grad = data.grad.detach().cpu().numpy()[0, 0]
