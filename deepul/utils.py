@@ -7,7 +7,16 @@ import torch
 import torch.nn.functional as F
 from torchvision.utils import make_grid
 
+def plot_receptive_field(out, data, col, model, layer):
+    out[0, 0, 5, 5].backward()
+    grad = data.grad.detach().cpu().numpy()[0, 0]
+    grad = np.abs(grad)
+    grad = (grad > 1e-16).astype('float32')
+    grad[5, 5] = 0.5
 
+    col.imshow(grad)
+    col.title.set_text(f'{layer} Layer' + model)
+    
 def savefig(fname, show_figure=True):
     if not exists(dirname(fname)):
         os.makedirs(dirname(fname))
