@@ -1,5 +1,16 @@
 from .utils import *
 from sklearn.datasets import make_moons
+import numpy as np
+import torch.nn as nn
+import torch.utils.data
+import torchvision
+from torchvision import transforms as transforms
+from .hw4_utils.hw4_models import GoogLeNet
+import scipy.ndimage
+import cv2
+import deepul.pytorch_util as ptu
+import math
+import sys
 
 def make_scatterplot(points, title=None, filename=None):
     plt.figure()
@@ -129,34 +140,7 @@ def q1_save_results(dset_type, part, fn):
 ##### Question 2 #####
 ######################
 
-def visualize_q2_data():
-    data_dir = get_data_dir(2)
-    train_data, test_data = load_pickled_data(join(data_dir, 'shapes.pkl'))
-    name = 'Shape'
-
-    idxs = np.random.choice(len(train_data), replace=False, size=(100,))
-    images = train_data[idxs] * 255
-    show_samples(images, title=f'{name} Samples')
-
-def q2_save_results(fn):
-    data_dir = get_data_dir(2)
-    train_data, test_data = load_pickled_data(join(data_dir, 'shapes.pkl'))
-
-    train_losses, test_losses, samples = fn(train_data, test_data)
-    samples = np.clip(samples.astype('float') * 2.0, 0, 1.9999)
-    floored_samples = np.floor(samples)
-
-    print(f'Final Test Loss: {test_losses[-1]:.4f}')
-    save_training_plot(train_losses, test_losses, f'Q2 Dataset Train Plot',
-                       f'results/q2_train_plot.png')
-    show_samples(samples * 255.0 / 2.0, f'results/q2_samples.png')
-    show_samples(floored_samples * 255.0, f'results/q2_flooredsamples.png', title='Samples with Flooring')
-
-######################
-##### Question 3 #####
-######################
-
-def visualize_q3_data():
+def visualize_q2_q3_data():
     data_dir = get_data_dir(2)
     train_data, test_data = load_pickled_data(join(data_dir, 'celeb.pkl'))
     name = 'CelebA'
@@ -165,22 +149,62 @@ def visualize_q3_data():
     images = train_data[idxs].astype(np.float32) / 3.0 * 255.0
     show_samples(images, title=f'{name} Samples')
 
-def get_q3_data():
+def get_q2_q3_data():
     data_dir = get_data_dir(2)
     train_data, test_data = load_pickled_data(join(data_dir, 'celeb.pkl'))
     return train_data, test_data
 
+def plot_vae_training_plot(train_losses, test_losses, title, fname):
+    elbo_train, recon_train, kl_train = train_losses[:, 0], train_losses[:, 1], train_losses[:, 2]
+    elbo_test, recon_test, kl_test = test_losses[:, 0], test_losses[:, 1], test_losses[:, 2]
+    plt.figure()
+    n_epochs = len(test_losses) - 1
+    x_train = np.linspace(0, n_epochs, len(train_losses))
+    x_test = np.arange(n_epochs + 1)
 
-def q3_save_results(fn, part):
-    data_dir = get_data_dir(2)
-    train_data, test_data = load_pickled_data(join(data_dir, 'celeb.pkl'))
+    plt.plot(x_train, elbo_train, label='-elbo_train')
+    plt.plot(x_train, recon_train, label='recon_loss_train')
+    plt.plot(x_train, kl_train, label='kl_loss_train')
+    plt.plot(x_test, elbo_test, label='-elbo_test')
+    plt.plot(x_test, recon_test, label='recon_loss_test')
+    plt.plot(x_test, kl_test, label='kl_loss_test')
 
-    train_losses, test_losses, samples, interpolations = fn(train_data, test_data)
-    samples = samples.astype('float')
-    interpolations = interpolations.astype('float')
+    plt.legend()
+    plt.title(title)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    savefig(fname)
 
-    print(f'Final Test Loss: {test_losses[-1]:.4f}')
-    save_training_plot(train_losses, test_losses, f'Q3 Dataset Train Plot',
-                       f'results/q3_{part}_train_plot.png')
-    show_samples(samples * 255.0, f'results/q3_{part}_samples.png')
-    show_samples(interpolations * 255.0, f'results/q3_{part}_interpolations.png', nrow=6, title='Interpolations')
+def q2_save_results(part, fn):
+    assert part in ['a', 'b']
+    train_data, test_data = get_q2_q3_data()
+
+    train_losses, test_losses, samples, reconstructions, interpolations = fn(train_data, test_data)
+    samples, reconstructions, interpolations = samples.astype('float32'), reconstructions.astype('float32'), interpolations.astype('float32')
+    print(f'Final -ELBO: {test_losses[-1, 0]:.4f}, Recon Loss: {test_losses[-1, 1]:.4f}, '
+          f'KL Loss: {test_losses[-1, 2]:.4f}')
+    plot_vae_training_plot(train_losses, test_losses, f'Q2({part}) Train Plot',
+                           f'results/q2_{part}_train_plot.png')
+    show_samples(samples, title=f'Q2({part}) Samples',
+                 fname=f'results/q2_{part}_samples.png')
+    show_samples(reconstructions, title=f'Q2({part}) Reconstructions',
+                 fname=f'results/q2_{part}_reconstructions.png')
+    show_samples(interpolations, title=f'Q2({part}) Interpolations',
+                 fname=f'results/q2_{part}_interpolations.png')
+
+def q3_save_results(fn):
+    data_dir = get_data_dir(3)
+    train_data, test_data = get_q2_q3_data()
+
+    vqvae_train_losses, vqvae_test_losses, pixelcnn_train_losses, pixelcnn_test_losses, samples, reconstructions = fn(train_data, test_data)
+    samples, reconstructions = samples.astype('float32'), reconstructions.astype('float32')
+    print(f'VQ-VAE Final Test Loss: {vqvae_test_losses[-1]:.4f}')
+    print(f'PixelCNN Prior Final Test Loss: {pixelcnn_test_losses[-1]:.4f}')
+    save_training_plot(vqvae_train_losses, vqvae_test_losses,f'Q3 VQ-VAE Train Plot',
+                       f'results/q3_vqvae_train_plot.png')
+    save_training_plot(pixelcnn_train_losses, pixelcnn_test_losses,f'Q3 PixelCNN Prior Train Plot',
+                       f'results/q3_pixelcnn_train_plot.png')
+    show_samples(samples, title=f'Q3 Samples',
+                 fname=f'results/q3_samples.png')
+    show_samples(reconstructions, title=f'Q3 Reconstructions',
+                 fname=f'results/q3_reconstructions.png')
