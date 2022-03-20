@@ -118,7 +118,7 @@ def show_2d_densities(densities, dset_type, fname=None, title='Densities'):
     else:
         plt.show()
 
-def q1_save_results(dset_type, part, fn):
+def q1_save_results(dset_type, fn):
     if dset_type == 1:
         train_data, train_labels, test_data, test_labels = q1_sample_data_1()
     elif dset_type == 2:
@@ -130,10 +130,10 @@ def q1_save_results(dset_type, part, fn):
 
     print(f'Final Test Loss: {test_losses[-1]:.4f}')
 
-    save_training_plot(train_losses, test_losses, f'Q1({part}) Dataset {dset_type} Train Plot',
-                       f'results/q1_{part}_dset{dset_type}_train_plot.png')
-    show_2d_densities(densities, dset_type, fname=f'results/q1_{part}_dset{dset_type}_densities.png')
-    show_2d_latents(latents, train_labels, f'results/q1_{part}_dset{dset_type}_latents.png')
+    save_training_plot(train_losses, test_losses, f'Q1 Dataset {dset_type} Train Plot',
+                       f'results/q1_dset{dset_type}_train_plot.png')
+    show_2d_densities(densities, dset_type, fname=f'results/q1_dset{dset_type}_densities.png')
+    show_2d_latents(latents, train_labels, f'results/q1_dset{dset_type}_latents.png')
 
 
 ######################
