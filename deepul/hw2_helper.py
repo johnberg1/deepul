@@ -194,11 +194,11 @@ def q2_save_results(part, fn):
     show_samples(interpolations, title=f'Q2({part}) Interpolations',
                  fname=f'results/q2_{part}_interpolations.png')
 
-def q3_save_results(fn):
+def q3_save_results(fn, K=256):
     data_dir = get_data_dir(3)
     train_data, test_data = get_q2_q3_data()
 
-    vqvae_train_losses, vqvae_test_losses, pixelcnn_train_losses, pixelcnn_test_losses, samples, reconstructions = fn(train_data, test_data)
+    vqvae_train_losses, vqvae_test_losses, pixelcnn_train_losses, pixelcnn_test_losses, samples, reconstructions = fn(train_data, test_data, K=K)
     samples, reconstructions = samples.astype('float32'), reconstructions.astype('float32')
     print(f'VQ-VAE Final Test Loss: {vqvae_test_losses[-1]:.4f}')
     print(f'PixelCNN Prior Final Test Loss: {pixelcnn_test_losses[-1]:.4f}')
