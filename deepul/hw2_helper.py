@@ -152,6 +152,8 @@ def visualize_q2_q3_data():
 def get_q2_q3_data():
     data_dir = get_data_dir(2)
     train_data, test_data = load_pickled_data(join(data_dir, 'celeb.pkl'))
+    train_data = np.transpose(train_data, axes=[0, 3, 1, 2])  # NCHW 20000 x 3 x 32 x 32
+    test_data = np.transpose(test_data, axes=[0, 3, 1, 2])  # NCHW 6838 x 3 x 32 x 32
     return train_data, test_data
 
 def plot_vae_training_plot(train_losses, test_losses, title, fname):
