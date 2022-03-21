@@ -194,19 +194,19 @@ def q2_save_results(part, fn):
     show_samples(interpolations, title=f'Q2({part}) Interpolations',
                  fname=f'results/q2_{part}_interpolations.png')
 
-def q3_save_results(fn, D=256):
+def q3_save_results(fn):
     data_dir = get_data_dir(3)
     train_data, test_data = get_q2_q3_data()
 
-    vqvae_train_losses, vqvae_test_losses, pixelcnn_train_losses, pixelcnn_test_losses, samples, reconstructions = fn(train_data, test_data, D=D)
+    vqvae_train_losses, vqvae_test_losses, pixelcnn_train_losses, pixelcnn_test_losses, samples, reconstructions = fn(train_data, test_data)
     samples, reconstructions = samples.astype('float32'), reconstructions.astype('float32')
     print(f'VQ-VAE Final Test Loss: {vqvae_test_losses[-1]:.4f}')
     print(f'PixelCNN Prior Final Test Loss: {pixelcnn_test_losses[-1]:.4f}')
-    save_training_plot(vqvae_train_losses, vqvae_test_losses,f'Q3 {D} VQ-VAE Train Plot',
-                       f'results/q3_{D}_vqvae_train_plot.png')
-    save_training_plot(pixelcnn_train_losses, pixelcnn_test_losses,f'Q3 {D} PixelCNN Prior Train Plot',
-                       f'results/q3_{D}_pixelcnn_train_plot.png')
+    save_training_plot(vqvae_train_losses, vqvae_test_losses,f'Q3 VQ-VAE Train Plot',
+                       f'results/q3_vqvae_train_plot.png')
+    save_training_plot(pixelcnn_train_losses, pixelcnn_test_losses,f'Q3 PixelCNN Prior Train Plot',
+                       f'results/q3_pixelcnn_train_plot.png')
     show_samples(samples, title=f'Q3 Samples',
-                 fname=f'results/q3_{D}_samples.png')
+                 fname=f'results/q3_samples.png')
     show_samples(reconstructions, title=f'Q3 Reconstructions',
-                 fname=f'results/q3_{D}_reconstructions.png')
+                 fname=f'results/q3_reconstructions.png')
