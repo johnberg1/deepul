@@ -230,7 +230,7 @@ def q1_save_results(fn):
     plot_dcgan_losses(d_real_loss, d_fake_loss, g_loss, fname='results/q1_training_plot.png')
 
     generate_gif("temp/q1/samples/")
-    GIF(open('temp/q1/samples/anim.gif','rb').read())
+    # GIF(open('temp/q1/samples/anim.gif','rb').read())
 
 
 def q2_save_results(fn):
@@ -257,8 +257,8 @@ def q2_save_results(fn):
     plot_dcgan_losses(d_real_loss, d_fake_loss, g_loss, fname='results/q2_training_plot.png')
     generate_gif("temp/q2/samples/", keyword='X-Y')
     generate_gif("temp/q2/samples/", keyword='Y-X')
-    GIF(open('temp/q1/samples/anim_X-Y.gif','rb').read())
-    GIF(open('temp/q1/samples/anim_Y-X.gif','rb').read())
+    # GIF(open('temp/q2/samples/anim_X-Y.gif','rb').read())
+    # GIF(open('temp/q2/samples/anim_Y-X.gif','rb').read())
 
 
 # PREVIOUS YEAR
