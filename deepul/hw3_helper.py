@@ -168,6 +168,8 @@ def gan_save_samples(G, fixed_noise, iteration):
     if not os.path.exists(temp_path):
         os.makedirs(temp_path)
     path = os.path.join(temp_path, 'sample-{:06d}.png'.format(iteration))
+    grid = (grid + 1)/2 * 255.
+    grid = np.uint8(grid)
     imageio.imwrite(path, grid)
     print('Saved {}'.format(path))
 
@@ -186,11 +188,15 @@ def cyclegan_save_samples(iteration, fixed_Y, fixed_X, G_YtoX, G_XtoY):
 
     merged = merge_images(X, fake_Y)
     path = os.path.join(temp_path, 'sample-{:06d}-X-Y.png'.format(iteration))
+    merged = (merged + 1)/2 * 255.
+    merged = np.uint8(merged)
     imageio.imwrite(path, merged)
     print('Saved {}'.format(path))
 
     merged = merge_images(Y, fake_X)
     path = os.path.join(temp_path, 'sample-{:06d}-Y-X.png'.format(iteration))
+    merged = (merged + 1)/2 * 255.
+    merged = np.uint8(merged)
     imageio.imwrite(path, merged)
     print('Saved {}'.format(path))
 
