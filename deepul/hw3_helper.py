@@ -224,7 +224,7 @@ def plot_dcgan_losses(d_real_loss, d_fake_loss, g_loss, fname=None, title='GAN T
 def q1_save_results(fn):
     d_real_loss, d_fake_loss, g_loss = fn()
     initial_samples = Image.open("temp/q1/samples/sample-000000.png")
-    intermediate_samples = Image.open("temp/q1/samples/sample-000070.png")
+    intermediate_samples = Image.open("temp/q1/samples/sample-000080.png")
     final_samples = Image.open("temp/q1/samples/sample-000149.png")
     
     print("Final discriminator real loss: ", d_real_loss[-1])
