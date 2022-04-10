@@ -267,6 +267,108 @@ def q2_save_results(fn):
     # GIF(open('temp/q2/samples/anim_Y-X.gif','rb').read())
 
 
+# HERE
+def load_low_res_mnist():
+    mnist = load_digits().data
+    len_t = int(.8 * len(mnist))
+    train_data = mnist[:len_t].astype(np.float32)
+    test_data = mnist[len_t:].astype(np.float32)
+    return train_data / 16 * 255 , test_data / 16 * 255
+
+# HERE
+def load_fashion_mnist():
+    data_dir = get_data_dir(3)
+    transform = transforms.Compose([transforms.ToTensor()])
+    train_data = FashionMNIST(data_dir, download=True, train=True, transform=transform).data.unsqueeze(3)
+    test_data = FashionMNIST(data_dir, download=True, train=False, transform=transform).data.unsqueeze(3)
+    pad = transforms.Pad(2)
+    train_data = pad(train_data.moveaxis(3, 1)).moveaxis(1, 3)
+    test_data = pad(test_data.moveaxis(3, 1)).moveaxis(1, 3)
+    return train_data.numpy(), test_data.numpy()
+
+# HERE
+def visualize_low_res_mnist():
+    train_data, test_data = load_low_res_mnist()    
+    idxs = np.random.choice(len(train_data), replace=False, size=(100,))
+    images = train_data[idxs]
+    show_samples(images.reshape(len(images), 8, 8, 1), title='MNIST Samples')
+
+# HERE
+def visualize_fashion_mnist():
+    train_data, test_data = load_fashion_mnist()    
+    idxs = np.random.choice(len(train_data), replace=False, size=(100,))
+    images = train_data[idxs]
+    show_samples(images.reshape(len(images), 32, 32, 1), title='Fahion MNIST Samples')
+
+# HERE
+def plot_ddgm_training_plot(train_losses, test_losses, title, fname):
+    plt.figure()
+    n_epochs = len(test_losses) - 1
+    x_train = np.linspace(0, n_epochs, len(train_losses))
+    x_test = np.arange(n_epochs + 1)
+
+    plt.plot(x_train, train_losses, label='train')
+    plt.plot(x_test, test_losses, label='test')
+
+    plt.legend()
+    plt.title(title)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    savefig(fname)
+
+
+def plot_vae_training_plot(train_losses, test_losses, title, fname):
+    elbo_train, recon_train, kl_train = train_losses[:, 0], train_losses[:, 1], train_losses[:, 2]
+    elbo_test, recon_test, kl_test = test_losses[:, 0], test_losses[:, 1], test_losses[:, 2]
+    plt.figure()
+    n_epochs = len(test_losses) - 1
+    x_train = np.linspace(0, n_epochs, len(train_losses))
+    x_test = np.arange(n_epochs + 1)
+
+    plt.plot(x_train, elbo_train, label='-elbo_train')
+    plt.plot(x_train, recon_train, label='recon_loss_train')
+    plt.plot(x_train, kl_train, label='kl_loss_train')
+    plt.plot(x_test, elbo_test, label='-elbo_test')
+    plt.plot(x_test, recon_test, label='recon_loss_test')
+    plt.plot(x_test, kl_test, label='kl_loss_test')
+
+    plt.legend()
+    plt.title(title)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    savefig(fname)
+
+def q3_save_results(part, fn):
+    if part == 'a':
+        train_data, test_data = load_low_res_mnist()
+    else:
+        train_data, test_data = load_fashion_mnist()
+
+    
+    train_data = train_data / 255.
+    test_data = test_data / 255.
+    train_losses, test_losses, samples = fn(train_data, test_data, part)
+
+    if part == 'a':
+        print(f'Final -ELBO: {test_losses[-1, 0]:.4f}, Recon Loss: {test_losses[-1, 1]:.4f}, '
+          f'KL Loss: {test_losses[-1, 2]:.4f}')
+
+        plot_vae_training_plot(train_losses, test_losses, f'Q3({part}) Train Plot',
+                           f'results/q3_{part}_train_plot.png')
+        
+    else:
+        print(f'Final loss: {test_losses[-1]:.4f}')
+
+        plot_ddgm_training_plot(train_losses, test_losses, f'Q3({part}) Train Plot',
+                           f'results/q3_{part}_train_plot.png')
+
+        samples = samples.reshape(samples.shape[0] * samples.shape[1], \
+                    samples.shape[2], samples.shape[3], samples.shape[4]) 
+
+                              
+    show_samples(samples, title='Q3 MNIST Samples' if part == 'a' else 'Q3 Fashion Samples',
+                    fname=f'results/q3_{part}_samples.png')
+
 # PREVIOUS YEAR
 
 # from .utils import *
