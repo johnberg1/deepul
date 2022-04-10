@@ -256,9 +256,9 @@ def q2_save_results(fn):
     show_gan_samples(intermediate_samples_XY, fname='results/q2_intermediate_samples_xy.png', title='Intermediate Samples XtoY')
     show_gan_samples(final_samples_XY, fname='results/q2_final_samples_xy.png', title='Final Samples XtoY')
 
-    show_gan_samples(initial_samples_YX, fname='results/q2_initial_samples_xy.png', title='Initial Samples YtoX')
-    show_gan_samples(intermediate_samples_YX, fname='results/q2_intermediate_samples_xy.png', title='Intermediate Samples YtoX')
-    show_gan_samples(final_samples_YX, fname='results/q2_final_samples_xy.png', title='Final Samples YtoX')
+    show_gan_samples(initial_samples_YX, fname='results/q2_initial_samples_yx.png', title='Initial Samples YtoX')
+    show_gan_samples(intermediate_samples_YX, fname='results/q2_intermediate_samples_yx.png', title='Intermediate Samples YtoX')
+    show_gan_samples(final_samples_YX, fname='results/q2_final_samples_yx.png', title='Final Samples YtoX')
 
     plot_dcgan_losses(d_real_loss, d_fake_loss, g_loss, fname='results/q2_training_plot.png')
     generate_gif("temp/q2/samples/", keyword='X-Y')
