@@ -22,7 +22,10 @@ import imageio
 from PIL import Image
 from urllib.error import URLError
 from urllib.error import HTTPError
-
+from sklearn.datasets import load_digits
+import numpy as np
+from torchvision.datasets import FashionMNIST
+from torchvision import transforms
 
 def get_file(fname,
              origin,
